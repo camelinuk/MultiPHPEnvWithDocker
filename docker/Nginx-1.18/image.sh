@@ -2,11 +2,11 @@
 
 cd `dirname $0`
 
-IMAGE_NAME="scarwu/demo-nginx:1.14"
+IMAGE_NAME="lemoncx/nginx:1.18"
 
 case "$1" in
     build)
-        docker build -t $IMAGE_NAME .
+        docker build --network=host -t $IMAGE_NAME .
         ;;
 
     push)

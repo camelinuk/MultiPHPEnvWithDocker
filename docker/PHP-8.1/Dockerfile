@@ -1,0 +1,56 @@
+FROM alpine:3.19
+MAINTAINER James Chen <james.chen@lemon.cx>
+WORKDIR /build
+
+RUN apk update && apk add tzdata && apk add ca-certificates && rm -rf /var/cache/apk/* \
+  mkdir /usr/local/share/ca-certificates/extra
+#RUN pwd
+#COPY ./mycert.crt /usr/local/share/ca-certificates/mycert.crt
+#RUN update-ca-certificates
+RUN cp /usr/share/zoneinfo/Asia/Taipei /etc/localtime && echo "Asia/Taipei" > /etc/timezone && date
+
+
+RUN VERSION="8.1" \
+    && NEED_APK="curl php81>$VERSION php81-fpm>$VERSION" \
+   && PHP_MODULES="php81-common php81-gd php81-bcmath php81-dom php81-json php81-pdo php81-pdo_mysql php81-mysqli php81-pecl-imagick php81-mysqlnd php81-ctype php81-iconv php81-fileinfo php81-intl php81-simplexml php81-session php81-zlib php81-curl php81-mbstring php81-xsl php81-openssl php81-soap php81-sockets php81-xml php81-xmlwriter php81-xmlreader php81-zip php81-xsl php81-phar php81-pecl-redis php81-pecl-xdebug php81-pecl-uuid php81-posix php81-phar php81-sockets php81-litespeed php81-tokenizer php81-pecl-ssh2 php81-pecl-swoole" \
+    && apk add --no-cache --repository https://dl-cdn.alpinelinux.org/alpine/edge/community $NEED_APK $PHP_MODULES
+
+ENV PHP_DIR /etc
+
+RUN php81 -v \
+    && php81 -m
+RUN apk add git
+
+#install download helpers
+RUN apk add wget
+
+RUN curl -sS https://getcomposer.org/installer | php81 \
+    && mv /build/composer.phar /usr/local/bin/composer
+
+RUN mkdir /volume \
+    && mkdir /volume/log \
+    && mkdir /volume/data \
+    && mkdir /volume/config \
+    && mkdir /var/log/php-fpm \
+    && mkdir -p /usr/log/php-fpm \
+    #&& mv $PHP_DIR/php.ini $PHP_DIR/php.ini.bak \
+    && ln -s /volume/config/php.ini $PHP_DIR/php.ini \
+    #&& mv $PHP_DIR/php-fpm.conf $PHP_DIR/php-fpm.conf.bak \
+    && ln -s /volume/config/php-fpm.conf $PHP_DIR/php-fpm.conf \
+    && ln -s /etc/php81/php-fpm.d $PHP_DIR/php-fpm.d
+
+# install phpunit
+RUN wget https://phar.phpunit.de/phpunit-9.phar -O /usr/local/bin/phpunit && \
+    chmod +x /usr/local/bin/phpunit
+
+VOLUME ["/volume/config", "/volume/data", "/volume/log", "/var/log/php-fpm"]
+
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
+RUN addgroup nginx \
+    && adduser -D nginx -G nginx
+
+EXPOSE 9000/tcp
+
+CMD /usr/sbin/php-fpm81 --nodaemonize

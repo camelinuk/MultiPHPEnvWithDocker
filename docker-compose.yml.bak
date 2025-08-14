@@ -1,0 +1,208 @@
+version: '3'
+services:
+    nginx:
+        image: lemoncx/nginx:1.18
+        container_name: nginx18
+        hostname: nginx18
+        volumes:
+            - ./data:/volume/data
+            - ./log/nginx:/volume/log
+            - ./config/Nginx:/volume/config
+            - /var/log/nginx:/var/log/nginx
+            - /var/www/html/:/var/www/html
+            - ~/dockerConf/nginx/key/:/etc/nginx/key/
+            - ~/dockerConf/nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ~/dockerConf/nginx/sites-av/:/etc/nginx/sites-av/
+            - ~/dockerConf/nginx/sites-en/:/etc/nginx/sites-enabled/
+        ports:
+            - "80:80"
+            - "443:443"
+        external_links:
+            - "php56:PHP-5.6"
+            - "php70:PHP-7.0"
+            - "php71:PHP-7.1"
+            - "php72:PHP-7.2"
+            - "php74:PHP-7.4"
+        depends_on:
+            - "php56"
+            - "php70"
+            - "php71"
+            - "php72"
+            - "php74"
+        extra_hosts:
+            - inhmas1:10.88.188.61
+            - inhmas2:10.88.188.62
+            - inhmas8:10.88.188.68
+            - inhmas9:10.88.188.69
+            - inhmas10:10.88.188.70
+            - inslv1:10.88.188.71
+            - hmas1:192.168.100.61
+            - hmas2:192.168.100.62
+            - hmas2.lemon.cx:192.168.100.62
+            - hmas8:192.168.100.68
+            - hmas9:192.168.100.69
+            - hmas10:192.168.100.70
+            - hslv1:192.168.100.71
+            - www.iticket.com.tw:192.168.100.86
+            - jwww.iticket.com.tw:192.168.100.6
+            - fisx.apol.lemon.cx:10.88.188.188
+            - fiso.apol.lemon.cx:10.88.188.188
+            - pax.apol.lemon.cx:10.88.188.188
+            - pao.apol.lemon.cx:10.88.188.188
+            - tsx.apol.lemon.cx:10.88.188.188
+            - tso.apol.lemon.cx:10.88.188.188
+            - tso-hl.apol.lemon.cx:10.88.188.188
+            - tso-yn.apol.lemon.cx:10.88.188.188
+            - tso-moxy.apol.lemon.cx:10.88.188.188
+        environment:
+            - GET_HOSTS_FROM=dns
+        deploy:
+            resources:
+                limits:
+                   cpus: "0.50"
+                   memory: "200M"
+                reservations:
+                   cpus: "0.25"
+                   memory: "20M"
+        restart: always
+        networks:
+            - external-net
+            - db
+
+    php56:
+        image: lemoncx/php:5.6
+        container_name: php56
+        hostname: php56
+        depends_on:
+            - "mysqlSrv"
+        volumes:
+            - /var/www/html/:/var/www/html
+            - ./config/PHP-5.6:/volume/config
+            - ./data:/volume/data
+            - ./log/php56:/volume/log
+            - ~/dockerConf/phpfpm/php.ini:/etc/php.ini
+            - ~/dockerConf/phpfpm/php-fpm.conf:/etc/php-fpm.conf
+            - ~/dockerConf/phpfpm/www.conf:/etc/php-fpm.d/www.conf
+        restart: always
+        networks:
+            - external-net
+            - db
+
+    php70:
+        image: lemoncx/php:7.0
+        container_name: php70
+        hostname: php70
+        depends_on:
+            - "mysqlSrv"        
+        volumes:
+            - /var/www/html/:/var/www/html
+            - ./config/PHP-7.0:/volume/config
+            - ./data:/volume/data
+            - ./log/php70:/volume/log
+            - ~/dockerConf/phpfpm/php.ini:/etc/php.ini
+            - ~/dockerConf/phpfpm/php-fpm.conf:/etc/php-fpm.conf
+            - ~/dockerConf/phpfpm/www.conf:/etc/php-fpm.d/www.conf
+        restart: always
+        networks:
+            - external-net
+            - db
+
+    php71:
+        image: lemoncx/php:7.1
+        container_name: php71
+        hostname: php71
+        depends_on:
+            - "mysqlSrv"
+        volumes:
+            - /var/www/html/:/var/www/html
+            - ./config/PHP-7.1:/volume/config
+            - ./data:/volume/data
+            - ./log/php71:/volume/log
+            - ~/dockerConf/phpfpm/php.ini:/etc/php.ini
+            - ~/dockerConf/phpfpm/php-fpm.conf:/etc/php-fpm.conf
+            - ~/dockerConf/phpfpm/www.conf:/etc/php-fpm.d/www.conf
+        restart: always
+        networks:
+            - external-net
+            - db
+
+    php72:
+        image: lemoncx/php:7.2
+        container_name: php72
+        hostname: php72
+        depends_on:
+            - "mysqlSrv"
+        volumes:
+            - /var/www/html/:/var/www/html
+            - ./config/PHP-7.2:/volume/config
+            - ./data:/volume/data
+            - ./log/php72:/volume/log
+            - ~/dockerConf/phpfpm/php.ini:/etc/php.ini
+            - ~/dockerConf/phpfpm/php-fpm.conf:/etc/php-fpm.conf
+            - ~/dockerConf/phpfpm/www.conf:/etc/php-fpm.d/www.conf
+        restart: always
+        networks:
+            - external-net
+            - db
+
+    php74:
+        image: lemoncx/php:7.4
+        container_name: php74
+        hostname: php74
+        depends_on:
+            - "mysqlSrv"
+        volumes:
+            - /var/www/html/:/var/www/html
+            - /var/log/php-fpm:/var/log/php-fpm
+            - ./config/PHP-7.4:/volume/config
+            - ./data:/volume/data
+            - ./log/php74:/volume/log
+            - ~/dockerConf/phpfpm/php.ini:/etc/php.ini
+            - ~/dockerConf/phpfpm/php-fpm.conf:/etc/php-fpm.conf
+            - ~/dockerConf/phpfpm/www.conf:/etc/php-fpm.d/www.conf
+        restart: always
+        networks:
+            - external-net
+            - db
+
+    mysqlSrv:
+        image: lemoncx/mysql-srv:8.0
+        container_name: mysqlSrv
+        hostname: mysqlSrv
+        command: --default-authentication-plugin=mysql_native_password
+        volumes:
+            - /var/www/html/db:/var/lib/mysql
+            - ~/dockerConf/mysql80/my.cnf:/etc/my.cnf
+        ports:
+            - 3306:3306
+            - 33060:33060
+        restart: always
+        networks:
+            - db        
+        environment:
+            MYSQL_ROOT_PASSWORD: Jamesql
+
+    adminer:
+       image: adminer
+       container_name: onAdmin
+       depends_on:
+            - "mysqlSrv"
+       hostname: onAdmin
+       links:
+            - "mysqlSrv:mysqlSrv"
+       restart: always
+       ports:
+            - 8080:8080
+       environment:
+            PMA_HOST: "mysqlSrv"
+            ADMINER_PLUGINS: "tables-filter tinymce"
+            ADMINER_DEFAULT_SERVER: "mysql"          
+       networks:
+            - external-net
+            - db
+networks:
+    external-net:
+       external:
+          name: external-net
+    db:
+       driver: bridge

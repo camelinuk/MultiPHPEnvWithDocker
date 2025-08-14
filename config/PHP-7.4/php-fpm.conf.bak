@@ -1,0 +1,5 @@
+[global]
+pid = /var/run/php-fpm.pid
+error_log = /volume/log/fpm-7.4.log
+daemonize = no
+include=/volume/config/pools/*.conf

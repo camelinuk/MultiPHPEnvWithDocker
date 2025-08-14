@@ -32,4 +32,7 @@ http://localhost/php71
 
 # PHP 7.2
 http://localhost/php72
+
+# PHP 7.4
+http://localhost/php74
 ~~~

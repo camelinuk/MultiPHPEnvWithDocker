@@ -1,0 +1,59 @@
+    php81:
+        image: lemoncx/php:8.1
+        container_name: php81
+        hostname: php81
+        external_links:
+            - "nginx18:itix.qrgo.com.tw"
+        extra_hosts:
+            - myBOKI:10.0.1.155
+            - mysql57:10.0.0.87
+            - vue3.itix.io:127.0.0.1
+        environment:
+            - GET_HOSTS_FROM=dns
+        depends_on:
+            - "redisSrv"
+        volumes:
+            - /var/www/html/:/var/www/html
+            - /var/log/php-fpm:/var/log/php-fpm
+            - ./config/PHP-8.1:/volume/config
+            - ./data:/volume/data
+            - ./log/php81:/volume/log
+            - ./config/PHP-8.1/php.ini:/etc/php.ini
+            - ./config/PHP-8.1/php-fpm.conf:/etc/php-fpm.conf
+            - ./config/PHP-8.1/pools/main.conf:/etc/php-fpm.d/www.conf
+        ports:
+            - 9081:9000
+        restart: always
+        networks:
+            - soketi_network
+
+    php83:
+        image: lemoncx/php:8.3
+        container_name: php83
+        hostname: php83
+        external_links:
+            - "nginx18:itix.qrgo.com.tw"
+        extra_hosts:
+            - myBOKI:10.0.1.155
+            - mysql57:10.0.0.87
+            - vue3.itix.io:127.0.0.1
+        environment:
+            - GET_HOSTS_FROM=dns
+        depends_on:
+            - "redisSrv"
+        volumes:
+            - /var/www/html/:/var/www/html
+            - /var/log/php-fpm:/var/log/php-fpm
+            - ./config/PHP83:/volume/config
+            - ./data:/volume/data
+            - ./log/php83:/volume/log
+            - ./config/PHP83/php.ini:/etc/php.ini
+            - ./config/PHP83/php-fpm.conf:/etc/php-fpm.conf
+            - ./config/PHP83/pools/main.conf:/etc/php-fpm.d/www.conf
+        ports:
+            - 9083:9000
+        restart: always
+        networks:
+            - soketi_network
+
+

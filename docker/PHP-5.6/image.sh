@@ -2,11 +2,11 @@
 
 cd `dirname $0`
 
-IMAGE_NAME="scarwu/demo-php:5.6"
+IMAGE_NAME="lemoncx/php:5.6"
 
 case "$1" in
     build)
-        docker build -t $IMAGE_NAME .
+        docker build --network=host -t $IMAGE_NAME .
         ;;
 
     push)
