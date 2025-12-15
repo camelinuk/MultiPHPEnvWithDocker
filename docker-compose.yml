@@ -84,9 +84,9 @@ services:
             - ./config/PHP84:/volume/config
             - ./data:/volume/data
             - ./log/php84:/volume/log
-            - ./config/PHP84/php.ini:/etc/php.ini
-            - ./config/PHP84/php-fpm.conf:/etc/php-fpm.conf
-            - ./config/PHP84/pools/main.conf:/etc/php-fpm.d/www.conf
+            - ./config/PHP84/php.ini:/usr/local/etc/php/php.ini
+            - ./config/PHP84/php-fpm.conf:/etc/php84/php-fpm.conf
+            - ./config/PHP84/pools/main.conf:/etc/php84/php-fpm.d/www.conf
         ports:
             - 9084:9000
         restart: always

@@ -1,9 +1,13 @@
-FROM alpine:edge
-FROM php:8.4-fpm-alpine
+FROM php:8.4-alpine as builder
+#FROM alpine:edge
+#FROM php:8.4-fpm-alpine
 MAINTAINER James Chen <james.chen@lemon.cx>
 WORKDIR /build
 
-RUN apk update && apk add git wget tzdata && apk add ca-certificates && rm -rf /var/cache/apk/* \
+RUN apk update  --no-cache  && \
+	apk add --no-cache git wget tzdata && \
+	apk add --no-cache  ca-certificates && \
+	rm -rf /var/cache/apk/* && \
   mkdir /usr/local/share/ca-certificates/extra
 #RUN pwd
 #COPY ./mycert.crt /usr/local/share/ca-certificates/mycert.crt
@@ -25,6 +29,30 @@ CMD ["php","-v"]
 RUN php -v
 RUN php -v \
     && php -m
+RUN  apk add --no-cache --repository https://dl-cdn.alpinelinux.org/alpine/edge/community php84-pdo_mysql
+# Install build dependencies
+RUN apk add --no-cache $PHPIZE_DEPS \
+    imagemagick-dev icu-dev zlib-dev jpeg-dev libpng-dev libzip-dev libgomp linux-headers
+#    imagemagick-dev icu-dev zlib-dev jpeg-dev libpng-dev libzip-dev postgresql-dev libgomp linux-headers
+
+# Configure and install PHP extensions
+RUN docker-php-ext-configure gd --with-jpeg
+#RUN docker-php-ext-install intl pcntl gd exif zip mysqli pgsql pdo pdo_mysql pdo_pgsql bcmath opcache
+RUN docker-php-ext-install intl pcntl gd exif zip mysqli pdo pdo_mysql bcmath opcache
+
+
+# Install imagick extension
+RUN pecl install imagick; \
+    docker-php-ext-enable imagick;
+
+# Install xdebug extension
+#RUN pecl install xdebug; \
+#    docker-php-ext-enable xdebug; \
+#    echo "xdebug.mode=coverage" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini;
+
+# Clean up build dependencies
+RUN apk del $PHPIZE_DEPS imagemagick-dev icu-dev zlib-dev jpeg-dev libpng-dev libzip-dev libgomp 
+#RUN apk del $PHPIZE_DEPS imagemagick-dev icu-dev zlib-dev jpeg-dev libpng-dev libzip-dev postgresql-dev libgomp 
 
 RUN curl -sS https://getcomposer.org/installer | ${PHP_V} \
     && mv /build/composer.phar /usr/local/bin/composer
